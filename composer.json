@@ -1,0 +1,12 @@
+{
+    "name": "okyk7/nandemo-line-bot",
+    "authors": [
+        {
+            "name": "okyk7",
+            "email": "okyk7@users.noreply.github.com"
+        }
+    ],
+    "require": {
+        "linecorp/line-bot-sdk": "^2.1"
+    }
+}
