@@ -1,5 +1,9 @@
 {
     "name": "okyk7/nandemo-line-bot",
+    "description": "",
+    "type": "package",
+    "keywords": [],
+    "license": "",
     "authors": [
         {
             "name": "okyk7",
@@ -7,6 +11,12 @@
         }
     ],
     "require": {
+        "php": ">=5.4",
         "linecorp/line-bot-sdk": "^2.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "": ""
+        }
     }
 }
