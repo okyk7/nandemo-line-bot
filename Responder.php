@@ -73,7 +73,7 @@ class Responder
         );
 
         // umbrella is required
-            if (preg_match('/傘/', '傘') === 1) {
+            if (preg_match('/傘|かさ|kasa|カサ|ｶｻ/', $event->getText()) === 1) {
             $owm     = new OpenWeatherMap(OPEN_WEATHER_MAP_API_KEY);
             $weather = $owm->getWeather('Tokyo', 'metric', 'JP');
 
@@ -83,13 +83,13 @@ class Responder
                 $text = array('傘いらない');
             }
             $text = array_merge($text, array(
-                $weather->weather->getIconUrl(),
+                //$weather->weather->getIconUrl(),
                 $weather->temperature->min->getValue() . '℃ ～ '  . $weather->temperature->max->getValue() . '℃',
                 $weather->weather->description
             ));
 
         }
-        $textMessageBuilder = new TextMessageBuilder($text);
+        $textMessageBuilder = new TextMessageBuilder(implode("\n", $text));
         $response           = $this->bot->replyMessage($event->getReplyToken(), $textMessageBuilder);
     }
 }
