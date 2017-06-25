@@ -90,6 +90,6 @@ class Responder
 
         }
         $textMessageBuilder = new TextMessageBuilder($text);
-        $response = $bot->replyMessage($event->getReplyToken(), $textMessageBuilder);
+        $response           = $this->bot->replyMessage($event->getReplyToken(), $textMessageBuilder);
     }
 }
