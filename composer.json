@@ -12,7 +12,8 @@
     ],
     "require": {
         "php": ">=5.4",
-        "linecorp/line-bot-sdk": "^2.1"
+        "linecorp/line-bot-sdk": "^2.1",
+        "cmfcmf/openweathermap-php-api": "^2.2"
     },
     "autoload": {
         "psr-4": {

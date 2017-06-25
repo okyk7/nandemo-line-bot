@@ -6,7 +6,6 @@ require_once 'config.php';
 use LINE\LINEBot\Constant\HTTPHeader;
 use LINE\LINEBot\HTTPClient\CurlHTTPClient;
 use LINE\LINEBot;
-
 try {
     $httpClient = new CurlHTTPClient(CHANNEL_ACCESS_TOKEN);
     $bot        = new LINEBot($httpClient, array(

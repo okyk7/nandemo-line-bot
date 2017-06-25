@@ -11,6 +11,8 @@ use LINE\LINEBot\Event\MessageEvent\AudioMessage;
 use LINE\LINEBot\Event\MessageEvent\LocationMessage;
 use LINE\LINEBot\Event\MessageEvent\UnknownMessage;
 use LINE\LINEBot;
+use Cmfcmf\OpenWeatherMap;
+use LINE\LINEBot\MessageBuilder\TextMessageBuilder;
 
 /**
  * Responder
@@ -66,10 +68,28 @@ class Responder
      */
     protected function textMessage(TextMessage $event)
     {
-        // 傘判定
-        // 次の電車の発車時刻2つ分
-        // 買い物メモ(追加削除)
-        // 実装して欲しいメモ登録
-        Util::dump($event);
+        $text = array(
+            '何をやってもダメ'
+        );
+
+        // umbrella is required
+            if (preg_match('/傘/', '傘') === 1) {
+            $owm     = new OpenWeatherMap(OPEN_WEATHER_MAP_API_KEY);
+            $weather = $owm->getWeather('Tokyo', 'metric', 'JP');
+
+            if (preg_match('/rain/i', $weather->weather->description) === 1) {
+                $text = array('傘いる');
+            } else {
+                $text = array('傘いらない');
+            }
+            $text = array_merge($text, array(
+                $weather->weather->getIconUrl(),
+                $weather->temperature->min->getValue() . '℃ ～ '  . $weather->temperature->max->getValue() . '℃',
+                $weather->weather->description
+            ));
+
+        }
+        $textMessageBuilder = new TextMessageBuilder($text);
+        $response = $bot->replyMessage($event->getReplyToken(), $textMessageBuilder);
     }
 }
