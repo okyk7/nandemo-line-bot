@@ -22,15 +22,13 @@ class Responder
 
     /**
      *
-     * @param string $accessToken
-     * @param string $secret
+     * @param CurlHTTPClient $httpClient
+     * @param LINEBot $bot
      */
-    public function __construct($accessToken, $secret)
+    public function __construct(CurlHTTPClient $httpClient, LINEBot $bot)
     {
-        $this->httpClient = new CurlHTTPClient($accessToken);
-        $this->bot        = new LINEBot($this->httpClient, array(
-            'channelSecret' => $secret
-        ));
+        $this->httpClient = $httpClient;
+        $this->bot        = $bot;
     }
 
     /**
@@ -66,11 +64,12 @@ class Responder
      *
      * @param TextMessage $event
      */
-    protected function textEvent(TextMessage $event)
+    protected function textMessage(TextMessage $event)
     {
         // 傘判定
         // 次の電車の発車時刻2つ分
         // 買い物メモ(追加削除)
         // 実装して欲しいメモ登録
+        Util::dump($event);
     }
 }

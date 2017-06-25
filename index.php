@@ -4,17 +4,19 @@ require_once './vendor/autoload.php';
 require_once 'config.php';
 
 use LINE\LINEBot\Constant\HTTPHeader;
-
-$signature = $_SERVER['HTTP_' . HTTPHeader::LINE_SIGNATURE];
+use LINE\LINEBot\HTTPClient\CurlHTTPClient;
+use LINE\LINEBot;
 
 try {
-    /*
-    $events    = $bot->parseEventRequest(file_get_contents('php://input'), $signature);
-    $responder = new res($events);
-    */
+    $httpClient = new CurlHTTPClient(CHANNEL_ACCESS_TOKEN);
+    $bot        = new LINEBot($httpClient, array(
+        'channelSecret' => CHANNEL_SECRET
+    ));
 
-    $responder = new Responder(CHANNEL_ACCESS_TOKEN, CHANNEL_SECRET, $events);
-    $responder->exec();
+    $signature = $_SERVER['HTTP_' . HTTPHeader::LINE_SIGNATURE];
+    $events    = $bot->parseEventRequest(file_get_contents('php://input'), $signature);
+    $responder = new Responder($httpClient, $bot);
+    $responder->exec($events);
 } catch (Exception $ex) {
     Util::error($ex);
 }
