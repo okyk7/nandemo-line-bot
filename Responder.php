@@ -19,7 +19,16 @@ use LINE\LINEBot\MessageBuilder\TextMessageBuilder;
  */
 class Responder
 {
+    /**
+     *
+     * @var CurlHTTPClient
+     */
     protected $httpClient;
+
+    /**
+     *
+     * @var LINEBot
+     */
     protected $bot;
 
     /**
@@ -34,7 +43,7 @@ class Responder
     }
 
     /**
-     * Exec
+     * 実行
      * @param BaseEvent[] $events
      */
     public function exec(array $events)
@@ -63,33 +72,44 @@ class Responder
     }
 
     /**
-     *
+     * TextMessage
      * @param TextMessage $event
      */
-    protected function textMessage(TextMessage $event)
+    public function textMessage(TextMessage $event)
     {
-        $text = array(
-            '何をやってもダメ'
-        );
-
-        // umbrella is required
-            if (preg_match('/傘|かさ|kasa|カサ|ｶｻ/', $event->getText()) === 1) {
-            $owm     = new OpenWeatherMap(OPEN_WEATHER_MAP_API_KEY);
-            $weather = $owm->getWeather('Tokyo', 'metric', 'JP');
-
-            if (preg_match('/rain/i', $weather->weather->description) === 1) {
-                $text = array('傘いる');
-            } else {
-                $text = array('傘いらない');
-            }
-            $text = array_merge($text, array(
-                //$weather->weather->getIconUrl(),
-                $weather->temperature->min->getValue() . '℃ ～ '  . $weather->temperature->max->getValue() . '℃',
-                $weather->weather->description
-            ));
-
+        $text = $this->umbrella($event);
+        if (empty($text)) {
+            $text = ['何をやってもダメ'];
         }
         $textMessageBuilder = new TextMessageBuilder(implode("\n", $text));
         $response           = $this->bot->replyMessage($event->getReplyToken(), $textMessageBuilder);
+        if (!$response->isSucceeded()) {
+            Util::error($response->getJSONDecodedBody());
+        }
+    }
+
+    /**
+     * 傘必要可否
+     * @param TextMessage $event
+     * @return NULL || array
+     */
+    public function umbrella(TextMessage $event)
+    {
+        if (preg_match('/傘|かさ|kasa|カサ|ｶｻ/', $event->getText()) !== 1) {
+            return null;
+        }
+
+        $owm     = new OpenWeatherMap(OPEN_WEATHER_MAP_API_KEY);
+        $weather = $owm->getWeather('Tokyo', 'metric', 'JP');
+        $weather->lastUpdate->setTimezone(new DateTimeZone('Asia/Tokyo'));
+
+        $text = (preg_match('/rain/i', $weather->weather->description) === 1) ? ['傘いる'] : ['傘いらない'];
+        $text = array_merge($text, array(
+            //$weather->weather->getIconUrl(),
+            $weather->temperature->min->getValue() . '℃ ～ '  . $weather->temperature->max->getValue() . '℃',
+            $weather->weather->description,
+            $weather->lastUpdate->format('Y-m-d H:i')
+        ));
+        return $text;
     }
 }
